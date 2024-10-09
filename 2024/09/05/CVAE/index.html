@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo_16.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"tungyuyoung.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="AbstractVariational Auto-Encoders (VAEs) are a type of generative model that combines probabilistic graphical models and neural networks. They are capable of learning latent variable representations o">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Variational Auto-Encoders">
+<meta property="og:url" content="https://tungyuyoung.github.io/2024/09/05/CVAE/index.html">
+<meta property="og:site_name" content="Machine Learning Reasearch by Tung-Yu Yeung">
+<meta property="og:description" content="AbstractVariational Auto-Encoders (VAEs) are a type of generative model that combines probabilistic graphical models and neural networks. They are capable of learning latent variable representations o">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tungyuyoung.github.io/img/VAE/VAE_n_AE.jpg">
+<meta property="og:image" content="https://tungyuyoung.github.io/img/VAE/VAE_arc.png">
+<meta property="article:published_time" content="2024-09-05T16:57:21.000Z">
+<meta property="article:modified_time" content="2024-10-09T09:56:31.541Z">
+<meta property="article:author" content="Tung-Yu Yeung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tungyuyoung.github.io/img/VAE/VAE_n_AE.jpg">
+
+
+<link rel="canonical" href="https://tungyuyoung.github.io/2024/09/05/CVAE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://tungyuyoung.github.io/2024/09/05/CVAE/","path":"2024/09/05/CVAE/","title":"Variational Auto-Encoders"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Variational Auto-Encoders | Machine Learning Reasearch by Tung-Yu Yeung</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Machine Learning Reasearch by Tung-Yu Yeung</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">GATEWAY TO BETTER WORLD</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-number">2.</span> <span class="nav-text">1. Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Compared-with-GAN"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 Compared with GAN</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Compared-with-Auto-Encoder"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 Compared with Auto-Encoder</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-VAE"><span class="nav-number">3.</span> <span class="nav-text">2 VAE</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Principle-of-VAE"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 Principle of VAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Original-VAE"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 Original VAE</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-Maximizing-L-b"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.2.1 Maximizing $L_b$</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-Reparametrizing"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2.2 Reparametrizing</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-VAE-Neural-Network"><span class="nav-number">4.</span> <span class="nav-text">3 VAE &amp; Neural Network</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Intuition-and-Understanding-of-VAE"><span class="nav-number">4.1.</span> <span class="nav-text">3.1 Intuition and Understanding of VAE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-Using-Neural-Network-to-Build-VAE"><span class="nav-number">4.2.</span> <span class="nav-text">3.2 Using Neural Network to Build VAE</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Acknowledgement"><span class="nav-number">5.</span> <span class="nav-text">Acknowledgement</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <!--
+  <p class="site-author-name" itemprop="name">Tung-Yu Yeung</p>
+  -->
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Move the ClustrMaps script to the bottom -->
+<script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=250&t=tt&d=7ksrgw4tlA-8LbWt5zcKQdTPN8BCt-CqERwxsxsB-VM&co=222222&cmo=3acc3a&cmn=ff5353&ct=ffffff'></script>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://tungyuyoung.github.io/2024/09/05/CVAE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tung-Yu Yeung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Machine Learning Reasearch by Tung-Yu Yeung">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Variational Auto-Encoders | Machine Learning Reasearch by Tung-Yu Yeung">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Variational Auto-Encoders
+        </h1>
+
+        <div class="post-meta-container">
+          
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-09-05 16:57:21" itemprop="dateCreated datePublished" datetime="2024-09-05T16:57:21+00:00">2024-09-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-10-09 09:56:31" itemprop="dateModified" datetime="2024-10-09T09:56:31+00:00">2024-10-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mathematics/" itemprop="url" rel="index"><span itemprop="name">Mathematics</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>Variational Auto-Encoders (VAEs) are a type of generative model that combines probabilistic graphical models and neural networks. They are capable of learning latent variable representations of data and generating new data samples given some input data. VAEs approximate the log-likelihood by maximizing the variational lower bound, thus avoiding the direct maximization of potentially intractable objective functions.</p>
+<span id="more"></span>
+
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>In general, for VAE, a low-dimensional space $z$ can be mapped to high-dimensional space true data, like photos, songs. </p>
+<h2 id="1-1-Compared-with-GAN"><a href="#1-1-Compared-with-GAN" class="headerlink" title="1.1 Compared with GAN"></a>1.1 Compared with GAN</h2><p>VAE is similar to GAN. Both of them are to generate (new) data. In GAN, the point is to derive models that approximate the input distribution. In VAE, the focus is on how to model the input distribution in a decouplable continuous latent space.</p>
+<ul>
+<li><p>VAE take random sample of a specific distribution as input and can generate corresponding data, which is similar to GAN&#39;s goal in this respect. However, VAE doesn&#39;t need discriminator, but encoder to estimate the specific distribution.</p>
+</li>
+<li><p>For example, given a serious of photos of cats, we hope the model can generate a new cat photo by input a $n$-dimensional random vector. For GAN, the model does not need to understand the relationship between the cat and the $n$-dimension random vector, but directly fits the distribution of the cat photos with respect to the $n$-dimensional vector by means of adversarial learning.<br/><br>On the contrary, for VAE, the $n$-dimensional vector represents $n$ invisible factors that determine what the final cat face will look like. There will be a distribution generated corresponding to each factor. Sampling from these distributions and relationships, the model can recover a cat face through a deep neural network.</p>
+</li>
+</ul>
+<h2 id="1-2-Compared-with-Auto-Encoder"><a href="#1-2-Compared-with-Auto-Encoder" class="headerlink" title="1.2 Compared with Auto-Encoder"></a>1.2 Compared with Auto-Encoder</h2><p>In AE, the model take a data as input and generate a new data same as input data. But in general, the goal is that the generated data is a little bit different from the input, which means that the model need to take random vector as input and is able to learn the stylised features of the generated data. </p>
+<p>The architecture of VAE is similar to AE&#39;s, which is composed of <strong>Encoder</strong> (aka recognition &#x2F; inference module) and <strong>Decoder</strong> (aka generative module). Both VAE and AE try to learn latent vector and reconstruct data at the same time. The difference is that, compared with AE, the latent space of VAE is continuous, and the decoder itself is used as generative model. VAE introduces variational approach based on AE.</p>
+<p><img src="/img/VAE/VAE_n_AE.jpg" alt="Fig.1 AE (left) and VAE (right)"></p>
+<center><font size="2">Fig.1 AE (left) and VAE (right)</font></center>
+
+<p>AE is an unsupervised algorithm. The key method is that input feature $x$ can be abstracted as hidden feature $z$, and then $z$ can be predicted or reconstructed as output $\hat{x}$ through decoder. Generally, encoder and decoder could be CNN / RNN / LSTM, etc. The goal of AE is to extract abstract features $z$, that is minimizing the loss function $L(x, \hat{x})$, like:</p>
+<p>$$<br>\displaylines{L(x, \hat{x}) &#x3D; \sum^n_{i&#x3D;1}||x_i - x||^2 \\&#x3D;\sum^n_{i&#x3D;1}||x_i - g(f(x_i))||^2} \tag{1.1}<br>$$</p>
+<p>where $f(\cdot)$ denotes the encoder, $g(\cdot)$ denotes the decoder, $x_i$ contains $n$ features, i.e., $x_i \in \mathbb{R}^n$.</p>
+<h1 id="2-VAE"><a href="#2-VAE" class="headerlink" title="2 VAE"></a>2 VAE</h1><h2 id="2-1-Principle-of-VAE"><a href="#2-1-Principle-of-VAE" class="headerlink" title="2.1 Principle of VAE"></a>2.1 Principle of VAE</h2><ul>
+<li><p>Suppose the dataset is $X &#x3D; {x^{(i)}}^N_{i&#x3D;1}$ is sampled from continuous or discrete variable $x$.</p>
+</li>
+<li><p>Suppose the data is generated by a random process and contains a invisible continuous random hidden variable $z$. There are two steps to generate:</p>
+<ul>
+<li>$z^{(i)}$ is generated by sampling from prior distribution $P_\theta(z)$;</li>
+<li>Generate $x^{(i)}$ from conditional probability distribution. (This process is hard to compute.)</li>
+</ul>
+</li>
+<li><p>The original VAE does not model $p_\theta{z}$, instead, model $Q_\phi(z|x)$ to approximate $P_\theta{z|x}$. The author recognizes the process of using $Q_\phi(z|x)$ as <strong>Encoder</strong>, that is, it can learn a corresponding hidden distribution $z$ for each sample $x$ (<em>note that each sample can be learnt its hidden distribution $z$</em>); the process of using $P_\theta{z|x}$ can be seen as <strong>Decoder</strong> to generate new data.</p>
+</li>
+</ul>
+<p><img src="/img/VAE/VAE_arc.png"></p>
+<center><font size="2">Fig.2 VAE architecture</font></center>
+
+<p>The architecture of VAE is shown in Figure 2. VAE will match a Gaussian Distribution for each sample $X$. Hidden variable $Z$ is sampled from Gaussian Distribution. For $K$ samples, suppose the Gaussian Distribution for each sample was $\mathcal{N}(\mu_k, \sigma^2_k)$. The key is how to approximate those distributions. VAE uses two neural networks to approximate the mean and the variance, that is, $\mu_k&#x3D;f_1(X_k)$ and $\text{log}\sigma^2_k &#x3D; f_2(X_k)$. In order to make each Gaussian Distribution as close as possible to the Standard Gaussian Distribution, KL divergence is used to calculate the loss.</p>
+<h2 id="2-2-Original-VAE"><a href="#2-2-Original-VAE" class="headerlink" title="2.2 Original VAE"></a>2.2 Original VAE</h2><p>Suppose the distribution of original sample data $x$ is,</p>
+<p>$$<br>x \sim P_\theta(x) \tag{1.2}<br>$$</p>
+<p>where, $\theta$ denotes the model&#39;s parameters.</p>
+<p>Here, we consider that $x$ is generated by hidden variable $z$. $z$ represents an encoding of specific attributes that can be obtained or inferred from input data.</p>
+<blockquote>
+<p>For example, in human face image generation, attributes might be eyes, nose, mouth, hair style, etc.</p>
+</blockquote>
+<p>In fact, $P_\theta(x, z)$ denotes the distribution of the input data and its attributes. To obtain $P_\theta(x)$, we can</p>
+<p>$$<br>P_\theta(x) &#x3D; \int P_\theta(x, z), dz \tag{1.3}<br>$$</p>
+<p>In Eq. 1.3, the problem is that it has no analytical form or valid estimator. Therefor, optimizing it via NN is not feasible. According to Bayes&#39; theorem, we can convert Eq. 1.3 to</p>
+<p>$$<br>P_\theta(x) &#x3D; \int P_\theta(x|z)P(z), dz \tag{1.4}<br>$$</p>
+<p>Here, $P(z)$ is the prior distribution of $z$. When $z$ is discrete and $P_\theta{x|z}$ is Gaussian Distribution, $P_\theta(x)$ is Gaussian Mixture Distribution; When $z$ is continuous, the $P_\theta(x)$ unpredictable. What’s more, for most of $z$, $P_\theta(x|z)$ is equal to $0$ because the sample space of $z$ is too large. Thus, we need to reduce the sample space (or increase the probability of generating $x$ from $z$), and it is simpler to compute the expectation when $z \sim Q(z|X)$.</p>
+<p>In more detail, suppose that $z \sim N(0, 1)$, prior distribution $P(x|z)$ is Gaussian Distribution, that is, $x|z \sim N(\mu(z), \sigma(z))$. $\mu(z)$ and $\sigma(z)$ are the functions denote the mean and variance of Gaussian Distribution corresponding to $z$. Then $P(x)$ is the cumulative of all Gaussian Distributions over the domain of integration. $P(z)$ is known, while $P(x|z)$ is unknown. So the fact is that to figure out the function $\mu$ and the function $\sigma$. The original target is solve $P(x)$, and the larger $P(x)$ the better. It is equivalent to solving for the maximum log-likelihood with respect to $x$,</p>
+<p>$$<br>L&#x3D;\sum_x \text{log} P(x) \tag{1.5}<br>$$</p>
+<p>To process $P(z|x)$ more easier, VAE introduces Variational Inference (Encoder):</p>
+<p>$$<br>Q(z|x) \approx P(z|x) \tag{1.6}<br>$$</p>
+<p>According to Bayes&#39; theorem, </p>
+<p>$$<br>\displaylines{\text{log} P(x) &#x3D; \int_Z P(z)P(x|z)dz \\ &#x3D; \int_Z Q(z|x)\text{log}(\frac{P(x, z)}{P(z|x)})dz<br>\\&#x3D;\int_Z Q(z|x) \text{log}(\frac{P(x, z)}{Q(z|x)}\frac{Q(z|x)}{P(z|x)})dz<br>\\&#x3D;\int_Z Q(z|x)\text{log}(\frac{P(x, z)}{Q(z|x)})dz + \int_Z Q(z|x)\text{log}(\frac{Q(z|x)}{P(z|x)})dz<br>\\&#x3D;\int_Z Q(z|x)\text{log}(\frac{P(x|z)P(z)}{Q(z|x)})dz + \int_Z Q(z|x)\text{log}(\frac{Q(z|x)}{P(z|x)})dz} \tag{1.7}<br>$$</p>
+<p>In Eq. 1.7, we can find that $\int_Z Q(z|x)\text{log}(\frac{Q(z|x)}{P(z|x)})dz$ is the <strong>KL divergence</strong> between $P$ and $Q$, that is, $\text{KL}(Q(z|x)||P(z|x))$. KL divergence is greater than or equal to $0$, so the Eq. 1.7 can be written as,</p>
+<p>$$<br>\text{log}P(x) \geq \int_Z Q(z|x)\text{log}(\frac{P(x|z)P(z)}{Q(z|x)})dz \tag{1.8}<br>$$</p>
+<p>and,</p>
+<p>$$<br>\text{log}P(x) &#x3D; L_b + \text{KL}(Q(z|x)||P(z|x)) \tag{1.9}<br>$$</p>
+<p>where, $L_b &#x3D; \int_Z Q(z|x)\text{log}(\frac{P(x|z)P(z)}{Q(z|x)})dz$ is the <strong>Evidence Lower Bound (ELBO)</strong>. The goal is to maximize $L_b$.</p>
+<blockquote>
+<p>Note: Posterior distribution $P(z|x)$ is intractable, so we need to approximate it using $Q(z|x)$. Firstly, $Q(z|x)$ has no relation to $\text{log}P(z|x)$. When adjust $Q(z|x)$ there will be no influence on $L_P$. Thus, when fix $P(x|z)$, maximizing $L_b$ by adjusting $Q(z|x)$, the $KL$ will be smaller. When $Q(z|x)$ approximate posterior distribution $P(z|x)$, $\text{KL} \to 0$. As a result, maximizing  $\text{log}P(x)$ equals to maximizing $L_b$.</p>
+</blockquote>
+<p>$$<br>\displaylines{L_b &#x3D; \int_Z Q(z|x)\text{log}(\frac{P(x|z)P(z)}{Q(z|x)})dz<br>\\ &#x3D; \int_Z Q(z|x)\text{log}(\frac{P(z)}{Q(z|x)})dz + \int_Z Q(z|x)\text{log}P(x|z)dz<br>\\ &#x3D; - \text{KL}(Q(z|x)||P(z)) + \int_Z Q(z|x)\text{log}P(x|z)dz<br>\\ &#x3D; - \text{KL}(Q(z|x)||P(z)) + E_{Q(z|x)}[\text{log}P(x|z)]} \tag{1.10}<br>$$</p>
+<p>From Eq.10, maximizing $L_b$ means to minimize $\text{KL}(Q(z|x)||P(z))$ and maximize $E_{Q(z|x)}[\text{log}P(x|z)]$.</p>
+<h3 id="2-2-1-Maximizing-L-b"><a href="#2-2-1-Maximizing-L-b" class="headerlink" title="2.2.1 Maximizing $L_b$"></a>2.2.1 Maximizing $L_b$</h3><p>First of all, we need to minimize  $\text{KL}(Q(z|x)||P(z))$. We have assumed that $P(z) \sim \mathcal{N}(0, 1)$, and $Q(z|x) \sim \mathcal{N}(\mu, \sigma^2)$, so,</p>
+<p>$$<br>\displaylines{\text{KL}(Q(z|x) || P(z)) &#x3D; \text{KL}(\mathcal{N}(\mu, \sigma^2) || \mathcal{N}(0, 1))<br>\\ &#x3D; \int \frac{1}{\sqrt{2\pi\sigma^2}}e^{\frac{-(x-\mu)^2}{2\sigma^2}}(\text{log}\frac{e^{\frac{-(x-\mu)^2}{2\sigma^2}}&#x2F;\sqrt{2\pi\sigma^2}}{e^{\frac{-x^2}{2}}&#x2F;\sqrt{2\pi}})dx<br>\\ &#x3D; \frac{1}{2} \frac{1}{\sqrt{2\pi\sigma^2}}\int e^{\frac{-(x-\mu)^2}{2\sigma^2}}(-\text{log} \sigma^2 + x^2 - \frac{(x-\mu)^2}{\sigma^2})dx<br>\\ &#x3D; \frac{1}{2} \int \frac{1}{\sqrt{2\pi\sigma^2}} e^{\frac{-(x-\mu)^2}{2\sigma^2}}(-\text{log} \sigma^2 + x^2 - \frac{(x-\mu)^2}{\sigma^2})dx<br>\\ &#x3D; \frac{1}{2} (-\text{log} \sigma^2 + \mu^2 + \sigma^2 - 1)} \tag{1.11}<br>$$</p>
+<p>Second, we need to maximize the $E_{Q(z|x)}[\text{log}P(x|z)]$.</p>
+<ul>
+<li>It means that the value of output from <strong>Decoder</strong> $P(x|z)$ will be as higher as possible given the <strong>Encoder</strong> $Q(z|x)$ output.</li>
+</ul>
+<ol>
+<li>First, using the Encoder NN to calculate the mean and var., sample $z$ from it. This procession is $Q(z|x)$.</li>
+<li>Second, using the $N$ of Decoder to calculate the mean and var. of $z$, making the mean (or even var.) to much approximate $x$, that is the probability of generating $x$ will be bigger, which is maximizing $\log P(x|z)$.</li>
+</ol>
+<h3 id="2-2-2-Reparametrizing"><a href="#2-2-2-Reparametrizing" class="headerlink" title="2.2.2 Reparametrizing"></a>2.2.2 Reparametrizing</h3><p>Sampling $z$ from $\mathcal N(\mu, \sigma^2)$ equals to sampling $\epsilon$ from $\mathcal N(0, 1)$ and applying $z&#x3D;\mu + \epsilon * \sigma$. The reason is that sampling procession is non-derivable but the result.</p>
+<h1 id="3-VAE-Neural-Network"><a href="#3-VAE-Neural-Network" class="headerlink" title="3 VAE &amp; Neural Network"></a>3 VAE &amp; Neural Network</h1><h2 id="3-1-Intuition-and-Understanding-of-VAE"><a href="#3-1-Intuition-and-Understanding-of-VAE" class="headerlink" title="3.1 Intuition and Understanding of VAE"></a>3.1 Intuition and Understanding of VAE</h2><ol>
+<li>The goal of VAE is to get smooth latent space.</li>
+<li>Variational Inference provides a loss function for VAE to maximize ELBO</li>
+</ol>
+<h2 id="3-2-Using-Neural-Network-to-Build-VAE"><a href="#3-2-Using-Neural-Network-to-Build-VAE" class="headerlink" title="3.2 Using Neural Network to Build VAE"></a>3.2 Using Neural Network to Build VAE</h2><ul>
+<li>Using two neural network “functions” to approximate and synthesis the probability distribution of $p(z|x)$ and $p(x|z)$, and guarantee that both $p(z)$ and $p(z|x)$ are smooth.</li>
+</ul>
+<p>Assume that $p(z)$ is a standard normal distribution, </p>
+<p>$$<br>p(z) \sim \mathcal{N}(0, I) \tag{3.1}<br>$$</p>
+<p>$$<br>q_\theta(z|x) \sim \mathcal{N}(g(x), h(x)),~~g \in G~~~h\in H \tag{3.2}<br>$$</p>
+<p>$$<br>p_\phi(x|z) \sim \mathcal{N}(f(z), cI),~~f\in F~~~c&gt;0 \tag{3.3}<br>$$</p>
+<p>where, $g(\cdot)$, $h(\cdot)$, and $f(\cdot)$ are the neural network functions.</p>
+<p>Note that,</p>
+<p>$$<br>p(z|x) &#x3D; \frac{p(x|z)p(z)}{p(x)} &#x3D; \frac{p(x|z)p(z)}{\int p(x|u)p(u)du} \tag{3.4}<br>$$</p>
+<blockquote>
+<p>Why we can make these assumptions directly? </p>
+<p>There are lots of benefits to use Gaussian Distribution:</p>
+<ul>
+<li>Easy to sample datapoint</li>
+<li>Easy to calculate KL divergence</li>
+<li>Satisfies Central Limit Theorem</li>
+<li>The space is smooth</li>
+</ul>
+</blockquote>
+<p>So, the goal is then,</p>
+<p>$$<br>(f^*, g^*, h^*) &#x3D; \text{arg max}_{(f, g, h) \in F\times G\times H}(\mathbb E_{z\sim q_x}(-\frac{||x-f(z)||^2}{2c}) - \text{KL}(q_x(z), p(z))) \tag{3.5}<br>$$</p>
+<p>Then the loss function is,</p>
+<p>$$<br>\displaylines{\text{Loss} &#x3D; C||x-\hat{x}||^2 + \text{KL}[N(\mu_x, \sigma_x), N(0,I)]<br>\\ &#x3D; C||x-f(z)||^2 + \text{KL}[N(g(x), h(x)), N(0,I)]} \tag{3.6}<br>$$</p>
+<h1 id="Acknowledgement"><a href="#Acknowledgement" class="headerlink" title="Acknowledgement"></a>Acknowledgement</h1><p>This note is inspired by <a target="_blank" rel="noopener" href="https://www.zywvvd.com/"><span style="color: blue;">Canglan&#39;s site</span></a>.</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/img/wechatpay.png" alt="Tung-Yu Yeung WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/img/alipay.png" alt="Tung-Yu Yeung Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Tung-Yu Yeung
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://tungyuyoung.github.io/2024/09/05/CVAE/" title="Variational Auto-Encoders">https://tungyuyoung.github.io/2024/09/05/CVAE/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/30/VITS/" rel="prev" title="Paper Note: VITS">
+                  <i class="fa fa-angle-left"></i> Paper Note: VITS
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/10/03/Norm-Flow/" rel="next" title="Normalizing Flow">
+                  Normalizing Flow <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+
+    <span class="author" itemprop="copyrightHolder">Tung-Yu Yeung</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+<!--
+-->
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

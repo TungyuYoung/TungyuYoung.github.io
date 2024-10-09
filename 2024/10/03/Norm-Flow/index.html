@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo_16.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"tungyuyoung.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="AbstractNormalizing flow can convert simple probability densities (e.g. Gaussian Distribution) into some complex form of distribution. It can be used in generative model, reinforcement learning, varia">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Normalizing Flow">
+<meta property="og:url" content="https://tungyuyoung.github.io/2024/10/03/Norm-Flow/index.html">
+<meta property="og:site_name" content="Machine Learning Reasearch by Tung-Yu Yeung">
+<meta property="og:description" content="AbstractNormalizing flow can convert simple probability densities (e.g. Gaussian Distribution) into some complex form of distribution. It can be used in generative model, reinforcement learning, varia">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tungyuyoung.github.io/img/NF/NF_1.jpg">
+<meta property="og:image" content="https://tungyuyoung.github.io/img/NF/NF_CF.jpg">
+<meta property="og:image" content="https://tungyuyoung.github.io/img/NF/NF_CF_i.jpg">
+<meta property="article:published_time" content="2024-10-03T23:58:29.000Z">
+<meta property="article:modified_time" content="2024-10-09T09:56:31.541Z">
+<meta property="article:author" content="Tung-Yu Yeung">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tungyuyoung.github.io/img/NF/NF_1.jpg">
+
+
+<link rel="canonical" href="https://tungyuyoung.github.io/2024/10/03/Norm-Flow/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://tungyuyoung.github.io/2024/10/03/Norm-Flow/","path":"2024/10/03/Norm-Flow/","title":"Normalizing Flow"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Normalizing Flow | Machine Learning Reasearch by Tung-Yu Yeung</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Machine Learning Reasearch by Tung-Yu Yeung</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">GATEWAY TO BETTER WORLD</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Prior-Knowledge"><span class="nav-number">2.</span> <span class="nav-text">1 Prior Knowledge</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-Overview-of-Normalizing-Flow"><span class="nav-number">2.1.</span> <span class="nav-text">1.1 Overview of Normalizing Flow</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-1-Principal-of-Flow"><span class="nav-number">2.1.1.</span> <span class="nav-text">1.1.1 Principal of Flow</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Change-of-Variable-Linear-Algebra-Jacobian-Matrix"><span class="nav-number">2.2.</span> <span class="nav-text">1.2 Change of Variable &amp; Linear Algebra &amp; Jacobian Matrix</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Normalizing-Flow-Neural-Network"><span class="nav-number">3.</span> <span class="nav-text">2 Normalizing Flow &amp; Neural Network</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Flow"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Coupling-Flow"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 Coupling Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Normalization-Flow"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 Normalization Flow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-Autoregressive-Flow"><span class="nav-number">3.4.</span> <span class="nav-text">2.4 Autoregressive Flow</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <!--
+  <p class="site-author-name" itemprop="name">Tung-Yu Yeung</p>
+  -->
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Move the ClustrMaps script to the bottom -->
+<script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=250&t=tt&d=7ksrgw4tlA-8LbWt5zcKQdTPN8BCt-CqERwxsxsB-VM&co=222222&cmo=3acc3a&cmn=ff5353&ct=ffffff'></script>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://tungyuyoung.github.io/2024/10/03/Norm-Flow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tung-Yu Yeung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Machine Learning Reasearch by Tung-Yu Yeung">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Normalizing Flow | Machine Learning Reasearch by Tung-Yu Yeung">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Normalizing Flow
+        </h1>
+
+        <div class="post-meta-container">
+          
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-10-03 23:58:29" itemprop="dateCreated datePublished" datetime="2024-10-03T23:58:29+00:00">2024-10-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-10-09 09:56:31" itemprop="dateModified" datetime="2024-10-09T09:56:31+00:00">2024-10-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mathematics/" itemprop="url" rel="index"><span itemprop="name">Mathematics</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>Normalizing flow can convert simple probability densities (e.g. Gaussian Distribution) into some complex form of distribution. It can be used in generative model, reinforcement learning, variational inference, and so on. <strong>Flow</strong> means that the data “flow” through a series of bijection (invertible mapping) to map to the appropriate representation space. <strong>Normalizing</strong> means that the variables in the representation space integrate to $1$, satisfying the definition of the probability distribution function. </p>
+<span id="more"></span>
+
+<h1 id="1-Prior-Knowledge"><a href="#1-Prior-Knowledge" class="headerlink" title="1 Prior Knowledge"></a>1 Prior Knowledge</h1><h2 id="1-1-Overview-of-Normalizing-Flow"><a href="#1-1-Overview-of-Normalizing-Flow" class="headerlink" title="1.1 Overview of Normalizing Flow"></a>1.1 Overview of Normalizing Flow</h2><p>In AIGC or GenAI, the goal is generate a result (photo, audio, text, and so on) by giving a condition. The result probably not have seen before and partial random. And the result must be reasonable, that is the latent space is smooth or regularized, basically.</p>
+<p>To solve this problem, NF is a useful method.</p>
+<p>When we use probabilistic generative model (PGM), assume that there is a true probability distribution (photo, audio, text, and so on) in the world. The PGM is the true probability distribution. We need to figure out the PGM, there are two goals,</p>
+<ul>
+<li>Sampling: get a new data randomly</li>
+<li>Evaluation: calculate the probability of a sample</li>
+</ul>
+<blockquote>
+<p><strong>Evaluation</strong></p>
+<p>The Evaluation often be used as a prior condition. For example, when we reconstruct a piece of audio, the probability of this audio “happening &#x2F; existing” is higher in the real world, the higher the probability that this audio we generate is “correct”.</p>
+</blockquote>
+<h3 id="1-1-1-Principal-of-Flow"><a href="#1-1-1-Principal-of-Flow" class="headerlink" title="1.1.1 Principal of Flow"></a>1.1.1 Principal of Flow</h3><p><strong>Sampling</strong></p>
+<p>Assume that there is a function $f(\cdot)$ and a latent space $z$. We sample a point from $z$ randomly, then apply $f^{-1}(z)$, we would get a target photo.</p>
+<p><strong>Evaluation</strong></p>
+<p>Assume that there is a photo $x$, we apply $f(x)$, we would get a point located on a simple distribution like Gaussian Distribution, then we can calculate the true probability of the point presenting.</p>
+<p>Moving forward, we approximate the true distribution via <strong>Change of Variables</strong>.</p>
+<p><img src="/img/NF/NF_1.jpg" alt="Fig.1 NF"></p>
+<center><font size="2">Fig.1 Illustration of NF</font></center>
+
+<p>$$<br>p_X(x) &#x3D; p_Z(f(x))|\det Df(x)|,~~Z&#x3D;f(x),~ Df(x)\text{ is Jacobian of}~f(X) \tag{1.1}<br>$$</p>
+<p>From Fig.1, a complex probability distribution can be transform to a simple probability distribution through a series of transform functions $f_n$. The correspond simple probability distribution can be transform back to the complex probability through the inverse function $f_n^{-1}$. That is <strong>Change of Variables</strong>.</p>
+<p>There is a natural benefit of Flow, that is make sure that the latent space is smooth. Because the Gaussian Distribution is smooth at the very beginning, if only apply transformation or mapping to it, the result must be smooth (the $f(\cdot)$ has to preserve the smoothness).</p>
+<h2 id="1-2-Change-of-Variable-Linear-Algebra-Jacobian-Matrix"><a href="#1-2-Change-of-Variable-Linear-Algebra-Jacobian-Matrix" class="headerlink" title="1.2 Change of Variable &amp; Linear Algebra &amp; Jacobian Matrix"></a>1.2 Change of Variable &amp; Linear Algebra &amp; Jacobian Matrix</h2><p>The essence of <strong>Change of Variable</strong> is to use new space (simple) to represent &#x2F; replace old space (complex). However, the density of coordinates will be change by <strong>Jacobian</strong>, and the corresponding probability distribution would be change. Take an easy example, assumed that there is uniform distribution $X \sim \mathcal{U}(0, 1)$. We perform an affine transformation on $X$ through $f(\cdot)$: $Y &#x3D; f(X) &#x3D; 2X +1$. As it is a probability distribution, the integration must be $1$. If we use $Y$ directly, the result will be wrong. So we need to apply a Jacobian Matrix to make sure that. </p>
+<ul>
+<li>So we need to find out a appropriate <strong>Transformation Matrix</strong> to calculate the <strong>Jacobian</strong> to make a simple distribution to approximate the probability distribution in real world.</li>
+</ul>
+<p>As a result, the $\det |\text{Jacobian}|$ is calculate the influence on the change of area or volume by the change of coordinate.</p>
+<h1 id="2-Normalizing-Flow-Neural-Network"><a href="#2-Normalizing-Flow-Neural-Network" class="headerlink" title="2 Normalizing Flow &amp; Neural Network"></a>2 Normalizing Flow &amp; Neural Network</h1><h2 id="2-1-Flow"><a href="#2-1-Flow" class="headerlink" title="2.1 Flow"></a>2.1 Flow</h2><p><strong>What is a flow?</strong></p>
+<p>Each <strong>Change of Variables</strong> is a <strong>Flow</strong>.</p>
+<p>A perfect <strong>Flow</strong> must be:</p>
+<ul>
+<li>Invertible. Need to make sure to sample and evaluate.</li>
+<li>High expressive. To approximate the real complex probability distribution.</li>
+<li>Easy to calculate Jacobian, and the Jacobian should be const.</li>
+</ul>
+<p>Linear flow is a simple linear transformation. It is easy to calculate the Jacobian and inverse function. But the expressiveness is weakness. Even though we perform a series of linear flow on a Gaussian Distribution, it is still a Gaussian Distribution which doesn&#39;t approximate the real world distribution.</p>
+<p>To fix this problem, we introduce <strong>Coupling Flow</strong>.</p>
+<h2 id="2-2-Coupling-Flow"><a href="#2-2-Coupling-Flow" class="headerlink" title="2.2 Coupling Flow"></a>2.2 Coupling Flow</h2><p><strong>Forward Flow</strong></p>
+<p><img src="/img/NF/NF_CF.jpg" alt="Fig.2 Forward Coupling Flow"></p>
+<center><font size="2">Fig.2 Forward Coupling Flow</font></center>
+
+
+<p><img src="/img/NF/NF_CF_i.jpg" alt="Fig.3 Inverse Coupling Flow"></p>
+<center><font size="2">Fig.3 Inverse Coupling Flow</font></center>
+
+<p>The Jacobian of Coupling Flow is,</p>
+<p>$$<br>\displaylines{Df(x) &#x3D; \left[<br>\begin{matrix}<br>\mathbf{I} &amp; 0 \\<br>\frac{\partial}{\partial{\mathbf{X}^A}}\hat f (\mathbf{X}^B|\Theta(\mathbf{X}^A)) &amp; D\hat f(\mathbf{X}^B|\theta(\mathbf{X}^A))<br>\end{matrix}<br>\right]} \tag{2.1}<br>$$</p>
+<p>$$<br>\det Df(x) &#x3D; \det D \hat f (\mathbf{X}^B | \Theta (\mathbf(X)^A)) \tag{2.2}<br>$$</p>
+<p>Generally, Coupling Flow uses Linear Function because its $\det|\text{Jacobian}|$ is a constant. The coupling flow is invertible and high non-linear (high expressive). </p>
+<p>Of course, when we perform coupling flow, we need to shuffle the input data.</p>
+<h2 id="2-3-Normalization-Flow"><a href="#2-3-Normalization-Flow" class="headerlink" title="2.3 Normalization Flow"></a>2.3 Normalization Flow</h2><h2 id="2-4-Autoregressive-Flow"><a href="#2-4-Autoregressive-Flow" class="headerlink" title="2.4 Autoregressive Flow"></a>2.4 Autoregressive Flow</h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/img/wechatpay.png" alt="Tung-Yu Yeung WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/img/alipay.png" alt="Tung-Yu Yeung Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Tung-Yu Yeung
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://tungyuyoung.github.io/2024/10/03/Norm-Flow/" title="Normalizing Flow">https://tungyuyoung.github.io/2024/10/03/Norm-Flow/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/09/05/CVAE/" rel="prev" title="Variational Auto-Encoders">
+                  <i class="fa fa-angle-left"></i> Variational Auto-Encoders
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+
+    <span class="author" itemprop="copyrightHolder">Tung-Yu Yeung</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+<!--
+-->
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>

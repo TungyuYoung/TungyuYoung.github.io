@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/logo_32.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/logo_16.ico">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"tungyuyoung.github.io","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="AbstractVITS: Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech [1]. VITS aims to improve the performance of ene-to-end (single stage) TTS model, so that the">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Paper Note: VITS">
+<meta property="og:url" content="https://tungyuyoung.github.io/2024/08/30/VITS/index.html">
+<meta property="og:site_name" content="Machine Learning Reasearch by Tung-Yu Yeung">
+<meta property="og:description" content="AbstractVITS: Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech [1]. VITS aims to improve the performance of ene-to-end (single stage) TTS model, so that the">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tungyuyoung.github.io/img/VITS/VITS_arch.png">
+<meta property="article:published_time" content="2024-08-30T15:45:59.000Z">
+<meta property="article:modified_time" content="2024-10-09T09:56:31.541Z">
+<meta property="article:author" content="Tung-Yu Yeung">
+<meta property="article:tag" content="Text to Speech">
+<meta property="article:tag" content="Paper Note">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tungyuyoung.github.io/img/VITS/VITS_arch.png">
+
+
+<link rel="canonical" href="https://tungyuyoung.github.io/2024/08/30/VITS/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://tungyuyoung.github.io/2024/08/30/VITS/","path":"2024/08/30/VITS/","title":"Paper Note: VITS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Paper Note: VITS | Machine Learning Reasearch by Tung-Yu Yeung</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Machine Learning Reasearch by Tung-Yu Yeung</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">GATEWAY TO BETTER WORLD</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Abstract"><span class="nav-number">1.</span> <span class="nav-text">Abstract</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Introduction"><span class="nav-number">2.</span> <span class="nav-text">1. Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Method"><span class="nav-number">3.</span> <span class="nav-text">2. Method</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-Variational-inference"><span class="nav-number">3.1.</span> <span class="nav-text">2.1 Variational inference</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1-Overview"><span class="nav-number">3.1.1.</span> <span class="nav-text">2.1.1 Overview</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2-Reconstruction-Loss"><span class="nav-number">3.1.2.</span> <span class="nav-text">2.1.2 Reconstruction Loss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3-KL-Divergence"><span class="nav-number">3.1.3.</span> <span class="nav-text">2.1.3 KL Divergence</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-Alignment-Estimation"><span class="nav-number">3.2.</span> <span class="nav-text">2.2 Alignment Estimation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-Monotonic-Alignment-Search"><span class="nav-number">3.2.1.</span> <span class="nav-text">2.2.1 Monotonic Alignment Search</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-Duration-Prediction-from-Text"><span class="nav-number">3.2.2.</span> <span class="nav-text">2.2.2 Duration Prediction from Text</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-Adversarial-Training"><span class="nav-number">3.3.</span> <span class="nav-text">2.3 Adversarial Training</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-4-Final-Loss"><span class="nav-number">4.</span> <span class="nav-text">2.4 Final Loss</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-5-Model-Architecture"><span class="nav-number">5.</span> <span class="nav-text">2.5 Model Architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-1-Posterior-Encoder"><span class="nav-number">5.1.</span> <span class="nav-text">2.5.1 Posterior Encoder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-2-Prior-Encoder"><span class="nav-number">5.2.</span> <span class="nav-text">2.5.2 Prior Encoder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-3-Decoder"><span class="nav-number">5.3.</span> <span class="nav-text">2.5.3 Decoder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-4-Discriminator"><span class="nav-number">5.4.</span> <span class="nav-text">2.5.4 Discriminator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stochastic-Duration-Predictor"><span class="nav-number">5.5.</span> <span class="nav-text">Stochastic Duration Predictor</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-Code-Explanation"><span class="nav-number">6.</span> <span class="nav-text">3. Code Explanation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-x-Stochastic-Duration-Predictor"><span class="nav-number">6.1.</span> <span class="nav-text">3.x Stochastic Duration Predictor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-x-1-Definition"><span class="nav-number">6.1.1.</span> <span class="nav-text">3.x.1 Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-x-2-Principle"><span class="nav-number">6.1.2.</span> <span class="nav-text">3.x.2 Principle</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reference"><span class="nav-number">7.</span> <span class="nav-text">Reference</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <!--
+  <p class="site-author-name" itemprop="name">Tung-Yu Yeung</p>
+  -->
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+
+    <!-- Move the ClustrMaps script to the bottom -->
+<script type='text/javascript' id='clustrmaps' src='//cdn.clustrmaps.com/map_v2.js?cl=ffffff&w=250&t=tt&d=7ksrgw4tlA-8LbWt5zcKQdTPN8BCt-CqERwxsxsB-VM&co=222222&cmo=3acc3a&cmn=ff5353&ct=ffffff'></script>
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://tungyuyoung.github.io/2024/08/30/VITS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tung-Yu Yeung">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Machine Learning Reasearch by Tung-Yu Yeung">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Paper Note: VITS | Machine Learning Reasearch by Tung-Yu Yeung">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Paper Note: VITS
+        </h1>
+
+        <div class="post-meta-container">
+          
+            <i class="fa fa-thumb-tack" style="color: #000000"></i>
+            <font color=#000000	>Sticky</font>
+            <span class="post-meta-divider"></span>
+          
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-08-30 15:45:59" itemprop="dateCreated datePublished" datetime="2024-08-30T15:45:59+00:00">2024-08-30</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2024-10-09 09:56:31" itemprop="dateModified" datetime="2024-10-09T09:56:31+00:00">2024-10-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Speech-AI/" itemprop="url" rel="index"><span itemprop="name">Speech AI</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>VITS: Conditional Variational Autoencoder with Adversarial Learning for End-to-End Text-to-Speech <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.06103"><span style="color: blue;">[1]</span></a>.</p>
+<p>VITS aims to improve the performance of ene-to-end (single stage) TTS model, so that the quality of synthesized speech meets or exceeds that of two-stage systems.This paper is published at ICML 2021.</p>
+<p>This note provides explanation and summary of VITS.</p>
+<span id="more"></span>
+<h1 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1. Introduction"></a>1. Introduction</h1><p>Traditional TTS model is a two-stage system: 1. text -&gt; middle feature (mel-spectrograms, linguistic features, etc.); 2. middle feature -&gt; raw waveforms. The models at each of the two-stage pipelines are developed independently in the past <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1609.03499"><span style="color: blue;">[2]</span></a>. Thus, there is a gap between the stages, which can result in high training costs and slow inference. Besides, the quality of synthesized speech from two-stage systems might not high enough (Note: in second-stage system, for example, spectrogram-to-waveform model is trained through real spectrogram. The quality of the spectrogram generated in the first-stage system might not be up to the real spectrogram&#39;s, which leads to degradation of the speech quality while inference). </p>
+<p>The overall architecture of the model consists of a posterior encoder, a prior encoder, a decoder, a discriminator, and a stochastic duration predictor. The posterior encoder and discriminator are only used during training and are not involved in inference. VITS introduces four modules to generate more natural audio:</p>
+<ul>
+<li>Variational autoencoder (VAE)</li>
+<li>Normalizing flows (improve quality of speech)</li>
+<li>GAN (assist training)</li>
+<li>Stochastic duration predictor (one-to-many, diverse rhythms)</li>
+</ul>
+<p><img src="/img/VITS/VITS_arch.png" alt="Fig.1 VITS_Architecture"></p>
+<center><font size="2">Fig.1 VITS Architecture</font></center>
+
+<p>Fig.1 (a) is the training stage. Fig.1 (b) is the inference stage. </p>
+<p><strong>Training stage</strong></p>
+<ul>
+<li><p><strong>Text encoder</strong>: The transformer-based text encoder, which encodes isolated text into features with contextual information. </p>
+</li>
+<li><p><strong>Prior encoder</strong>: Take the text (output from text encoder) and speaker embedding as input to get the prior distribution $z$. </p>
+</li>
+<li><p><strong>Posterior encoder</strong>: Input: linear spectrogram and speaker embedding.</p>
+</li>
+<li><p><strong>Stochastic Duration Predictor</strong>: To predict a distribution of the duration for a single phoneme.</p>
+</li>
+</ul>
+<blockquote>
+<p>Note that, since the prior encoder takes $c_{text}$ and speaker embedding as input while the posterior encoder takes the linear spectrogram and speaker embedding as input, the length of outputs from them would not be the same. Thus, we need to apply an alignment processing via monotonic alignment search. </p>
+</blockquote>
+<h1 id="2-Method"><a href="#2-Method" class="headerlink" title="2. Method"></a>2. Method</h1><h2 id="2-1-Variational-inference"><a href="#2-1-Variational-inference" class="headerlink" title="2.1 Variational inference"></a>2.1 Variational inference</h2><h3 id="2-1-1-Overview"><a href="#2-1-1-Overview" class="headerlink" title="2.1.1 Overview"></a>2.1.1 Overview</h3><p>VITS can be expressed as a conditional VAE. The core formula is then,</p>
+<p>$$<br>\log p_{\theta}(x|\theta) \geqslant \mathbb{E}_{q_\phi(z|x)}[\text{log}p_\theta(x|z) - \text{log}\frac{q_\phi(z|x)}{p_\theta(z|c)}]\tag{2.1}<br>$$</p>
+<p>where $c$ denotes the condition, that is, the <strong>text</strong>, $x$ can be considered as the generated waveform;<br/><br>$p_{\theta}(x|\theta)$ denotes the probability that we need to maximize, with the model parameters $\theta$.<br>It is difficult to maximize the this model directly. Thus, we maximize its variational lower bound, AKA evidence lower bound (ELBO). Since it involves conditions, we use the conditional variational lower bound here;<br/><br>$z$ denotes the latent variable;<br/><br>$p_\theta(z|c)$ represents the prior distribution of latent variables given conditions;<br/><br>$p_{\theta}(x|z)$ is the likelihood of $x$, can be understood as the probability of obtaining $x$ given $z$, that is, the <strong>Decoder</strong>. (In other words, the target waveform $x$ is reconstructed through the latent variable $z$); <br/><br>$q_\phi(z|x)$ is the approximate posterior distribution of $x$;<br/><br>$\text{log}\frac{q_\phi(z|x)}{p_\theta(z|c)}$ is the <strong>KL divergence</strong>: $\text{log}q_\phi(z|x) - \text{log}{p_\theta(z|c)}$. Here, $q_\phi(z|x)$ denotes the posterior distribution of $z$ (latent variable) given $x$ (predicted output waveform) predicted by the model $\phi$; $p_\theta(z|c)$ denotes the prior distribution of $z$ give $c$ (the input text).</p>
+<p>In general, to maximize the lower bound, there are two steps. First, we need to maximize the output from decoder $\text{log}~p_\theta(x|z)$, that is, the model $\theta$ needs to predict output $x$ well when given $z$. Second, we need to minimize the <strong>KL divergence</strong>, which is the distance between the posterior distribution and the prior distribution. Simply, the goal is to minimize the distance between the distribution of $z$ predicted by model $\phi$ given $x$ and the distribution of $z$ predicted by model $\theta$ given $c$.</p>
+<p>A detailed introduction to Conditional VAE can be found in <a href="/2024/09/05/CVAE/" title="Variational Auto-Encoders">this article</a>.</p>
+<p>In Eq. (2.1), $x$ denotes linear spectrogram of the audio, $c$ denotes the text and alignment, $z$ denotes latent variable. Alignment information is a matrix, which with shape of $\text{[|text|, |z|]}$.</p>
+<h3 id="2-1-2-Reconstruction-Loss"><a href="#2-1-2-Reconstruction-Loss" class="headerlink" title="2.1.2 Reconstruction Loss"></a>2.1.2 Reconstruction Loss</h3><p>The use <strong>mel-spectrogram</strong> as the reconstruct target $x_{mel}$.</p>
+<ul>
+<li>Upsampling the latent variables $z$ to the waveform domain $\hat y$</li>
+<li>Transform $\hat y$ to mel-spectrogram $\hat{x}_{mel}$</li>
+<li>Calculate the $L_1$ Loss<br>$$<br>L_{recon} &#x3D; ||x_{mel} - \hat x_{mel}||_1 \tag{2.2}<br>$$</li>
+</ul>
+<blockquote>
+<p>The reason of using mel-spectrogram instead of waveform is to improve the perceptual quality.</p>
+</blockquote>
+<h3 id="2-1-3-KL-Divergence"><a href="#2-1-3-KL-Divergence" class="headerlink" title="2.1.3 KL Divergence"></a>2.1.3 KL Divergence</h3><p>The input condition of the prior encoder $c$ is composed of phonemes $c_{text}$ (text -&gt; pinyin &#x2F; phonemes -&gt; Transformer Encoder -&gt; $c_{text}$) extracted from text and an alignment $A$ between phonemes and latent variables. </p>
+<blockquote>
+<p>The alignment matrix $A$ is a hard monotonic attention matrix. </p>
+<p>Monotonic: The current spectrum corresponds to the current or following word or text, but not to the previous one. </p>
+<p>Hard: Single spectrum corresponds to single word or text, not one to many.</p>
+<p>So the shape of alignment matrix would be $|c_{text}| \times |z|$ dimensions representing how long each input phoneme expands to be time-aligned with the target speech.</p>
+</blockquote>
+<p>However, the training set only provides the text and the waveform, not include the alignment information. So we must estimate the alignment at each training iteration.</p>
+<p>To provide high-resolution information for the posterior encoder, we use the linear-scale spectrogram of target speech $x_{lin}$ rather than mel-spectrogram. The KL divergence is then:</p>
+<p>$$<br>\displaylines{L_{kl} &#x3D; \log q_\phi(z|x_{lin}) - \log p_\theta(z|c_{text}, A),<br>\\ z \sim q_\phi(z|x_{lin}) &#x3D; N(z;\mu_\phi(x_{lin}), \sigma_\phi(x_{lin}))} \tag{2.3}<br>$$</p>
+<p>Note that the $z$ is sampled from the posterior distribution, which is a Gaussian distribution.</p>
+<p>In order to increase the expressiveness of the prior distribution to generate more realistic sample, we introduce <strong>normalizing flow</strong> $f_\theta$, which allows simple distributions to be reversibly transformed into more complex distributions according to the pattern of change of the variable. Then, </p>
+<p>$$<br>\displaylines{p_\theta(z|c) &#x3D; N(f_\theta(z);\mu_\theta(c), \sigma_\theta(c))|\det\frac{\partial f_\theta(z)}{\partial z}|,<br>\\ c &#x3D; [c_{text}, A]} \tag{2.4}<br>$$</p>
+<p>Why normalizing flow? Pleas reference to <a href="/2024/10/03/Norm-Flow/" title="Normalizing Flow">this article</a>.</p>
+<h2 id="2-2-Alignment-Estimation"><a href="#2-2-Alignment-Estimation" class="headerlink" title="2.2 Alignment Estimation"></a>2.2 Alignment Estimation</h2><h3 id="2-2-1-Monotonic-Alignment-Search"><a href="#2-2-1-Monotonic-Alignment-Search" class="headerlink" title="2.2.1 Monotonic Alignment Search"></a>2.2.1 Monotonic Alignment Search</h3><p>To estimate the alignment matrix $A$ between input text and target speech, we adopt MAS, a method to search an alignment that maximizes the likelihood of data parameterized by a normalizing flow $f$:</p>
+<p>$$<br>\displaylines{A &#x3D; \text{arg max}_{\hat A} \log p(x|c_{text}, \hat{A})<br>\\ &#x3D; \text{arg max}_{\hat A} log N(f(x); \mu(c_{text}, \hat{A}), \sigma(c_{text}, \hat{A}))} \tag{2.5}<br>$$</p>
+<p>Note that the alignments must be monotonic and non-skipping. Because the objective is the ELBO, instead of the exact log-likelihood. MAS need to redefine to find an alignment that maximizes the ELBO, which reduces to finding an alignment that maximizes the log-likelihood of the latent variables $z$:</p>
+<p>$$<br>\displaylines{\text{arg max}_{\hat A} \log p_\theta(x_{mel}|z) - \log\frac{q_\phi(z|x_{lin})}{p_\theta(z|c_{text}, \hat A)}<br>\\ &#x3D; \text{arg max}_{\hat A} \log p_\theta(z|c_{text}, \hat A)<br>\\ &#x3D; \log N(f_\theta(z); \mu_\theta(c_{text}, \hat A), \sigma_\theta(c_{text}, \hat A))} \tag{2.6}<br>$$</p>
+<h3 id="2-2-2-Duration-Prediction-from-Text"><a href="#2-2-2-Duration-Prediction-from-Text" class="headerlink" title="2.2.2 Duration Prediction from Text"></a>2.2.2 Duration Prediction from Text</h3><p>Because the MAS uses the posterior information which cannot be used while inference, we introduce duration prediction. The duration of each input token (world or phoneme) $d_i$ can be calculate by summing all the columns in each row of the estimated alignment $\sum_j A_{i, j}$ (where the $i$ the input token and the $j$ the spectrogram). The duration could be used to train a deterministic duration predictor. To make the model much more expressive, the duration predictor is designed to be stochastic, that is, a duration distribution of given phonemes instead of a fixed duration.</p>
+<p>The stochastic duration predictor is a flow-based generative model. We introduce two random variables $u$ and $v$, which have the same time resolution and dimension as that of the duration sequence $d$, for variational dequantization and variational data augmentation.</p>
+<h2 id="2-3-Adversarial-Training"><a href="#2-3-Adversarial-Training" class="headerlink" title="2.3 Adversarial Training"></a>2.3 Adversarial Training</h2><p>Using traditional loss function (like L1 loss between the generated waveform and the ground truth) or reconstruct loss (like MSE loss between the generated mel spectrogram and the ground truth&#39;s) to train the model, the generated wave would be unnatural.</p>
+<p>Thus, we add a discriminator $D$ to fix this problem. The decoder is the generator $G$. So, the loss functions are:</p>
+<p>$$<br>L_{\text{adv}}(D) &#x3D; \mathbb{E}_{(y, z)}[(D(y) - 1)^ 2 + (D(G(z)))^2] \tag{2.7}<br>$$</p>
+<p>$$<br>L_{\text{adv}}(G) &#x3D; \mathbb{E}[(D(G(z)) - 1)^2] \tag{2.8}<br>$$</p>
+<p>$$<br>L_{\text{fm}} &#x3D; \mathbb{E}_{(y,z)}[\sum _{l&#x3D;1}^T\frac{1}{N_l}||D^l(y) - D^l(G(z))||_1] \tag{2.9}<br>$$</p>
+<p>In formula 2.9, $T$ denotes the total number of layers in the discriminator and $D^l$ outputs the feature map of the $l$-th layer of the discriminator with $N_l$ number of features. The feature mapping loss can be seen as reconstruction loss that is measured in the hidden layers of the discriminator suggested as an alternative to the element-wise reconstruction loss of VAEs.</p>
+<h1 id="2-4-Final-Loss"><a href="#2-4-Final-Loss" class="headerlink" title="2.4 Final Loss"></a>2.4 Final Loss</h1><p>$$<br>L_{\text{vae}} &#x3D; L_{\text{recon}} + L_{\text{kl}} + L_{\text{dur}} + L_{\text{adv}}(G) + L_{\text{fm}}(G) \tag{2.10}<br>$$</p>
+<p>$L_{\text{recon}}$ is the mel loss.</p>
+<h1 id="2-5-Model-Architecture"><a href="#2-5-Model-Architecture" class="headerlink" title="2.5 Model Architecture"></a>2.5 Model Architecture</h1><p>There are four module in the model:</p>
+<ul>
+<li>Posterior Encoder: use the linear spectrogram as input</li>
+<li>prior Encoder: use the text and speaker information as input</li>
+<li>Decoder: reconstruct the latent variable $z$ to waveform</li>
+<li>Discriminator: for GAN, use waveform as input</li>
+<li>Stochastic Duration Predictor</li>
+</ul>
+<p>Note that the posterior encoder and the discriminator only be used in training stage.</p>
+<h2 id="2-5-1-Posterior-Encoder"><a href="#2-5-1-Posterior-Encoder" class="headerlink" title="2.5.1 Posterior Encoder"></a>2.5.1 Posterior Encoder</h2><p>Non-causal WaveNet residual blocks, consists of layers of dilated convolutions with a gated activation unit and skip connection. Then there will be a linear projection to get the mean and variance of the normal posterior distribution.</p>
+<p>For multi-speaker case, the speaker embedding should be added as condition.</p>
+<h2 id="2-5-2-Prior-Encoder"><a href="#2-5-2-Prior-Encoder" class="headerlink" title="2.5.2 Prior Encoder"></a>2.5.2 Prior Encoder</h2><p>Prior encoder consists of two modules.</p>
+<ul>
+<li><p>Text encoder. Using transformer encoder with relative positional embedding to encode the input text to get $c_\text{text}$. We can obtain the hidden representation $h_\text{text}$ from $c_\text{text}$. Then a linear projection would be used to calculate the mean and variance of the prior distribution.</p>
+</li>
+<li><p>Normalizing Flow. $f_\theta$ would be used to expand the expressiveness of the model. The flow is a stack of affine coupling layers.</p>
+</li>
+</ul>
+<h2 id="2-5-3-Decoder"><a href="#2-5-3-Decoder" class="headerlink" title="2.5.3 Decoder"></a>2.5.3 Decoder</h2><p>The decoder is like the traditional vocoder. In detail, decoder reconstruct the waveform from the latent variable $z$ instead of the spectrogram as the traditional vocoder.</p>
+<h2 id="2-5-4-Discriminator"><a href="#2-5-4-Discriminator" class="headerlink" title="2.5.4 Discriminator"></a>2.5.4 Discriminator</h2><p>HiFi-GAN</p>
+<h2 id="Stochastic-Duration-Predictor"><a href="#Stochastic-Duration-Predictor" class="headerlink" title="Stochastic Duration Predictor"></a>Stochastic Duration Predictor</h2><p>A stack of residual blocks with dilated and depth-separable convolutional layers. </p>
+<p>Normalizing Flow.</p>
+<h1 id="3-Code-Explanation"><a href="#3-Code-Explanation" class="headerlink" title="3. Code Explanation"></a>3. Code Explanation</h1><p><a target="_blank" rel="noopener" href="https://github.com/jaywalnut310/vits">https://github.com/jaywalnut310/vits</a></p>
+<h2 id="3-x-Stochastic-Duration-Predictor"><a href="#3-x-Stochastic-Duration-Predictor" class="headerlink" title="3.x Stochastic Duration Predictor"></a>3.x Stochastic Duration Predictor</h2><h3 id="3-x-1-Definition"><a href="#3-x-1-Definition" class="headerlink" title="3.x.1 Definition"></a>3.x.1 Definition</h3><h3 id="3-x-2-Principle"><a href="#3-x-2-Principle" class="headerlink" title="3.x.2 Principle"></a>3.x.2 Principle</h3><p><strong>Variational Dequantization</strong></p>
+<p>Each word or text maps to specified integer numbers of spectrogram. So the distribution of duration is discrete. To model this distribution, we can use a continuous distribution to replace it to derive the lower bound of the target distribution log-likelihood. This lower bound is defined as:</p>
+<p>$$<br>\mathbb{E}_{u\sim q(u|x)} \log p(x+u) - \log q(u|x) \tag{3.1}<br>$$</p>
+<p>where, the $x$ is the target distribution, $q(u|x)$ the posterior distribution, $p(x+u)$ the model distribution.</p>
+<ul>
+<li>Generally, $q(u|x)$ is a conditional flow model, $u&#x3D;q_x(\text{eps})$, $\text{eps}$ is a noise randomly sample from the Gaussian Distribution. So, we can get $\log q(u|x) &#x3D; \log(\text{eps}) + log |\det [\frac{\partial q^{-1}}{\partial u}]| &#x3D; \log(\text{eps}) - log |\det [\frac{\partial q}{\partial \text{eps}}]|$.</li>
+</ul>
+<p><strong>Variational Data Augmentation</strong></p>
+<h1 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h1><p>[1] Kim J, Kong J, Son J. Conditional variational autoencoder with adversarial learning for end-to-end text-to-speech[C]&#x2F;&#x2F;ICML. PMLR, 2021: 5530-5540.<br>[2] Oord A, Dieleman S, Zen H, et al. Wavenet: A generative model for raw audio[J]. arXiv preprint arXiv:1609.03499, 2016.<br>[3] </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/img/wechatpay.png" alt="Tung-Yu Yeung WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/img/alipay.png" alt="Tung-Yu Yeung Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>Tung-Yu Yeung
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://tungyuyoung.github.io/2024/08/30/VITS/" title="Paper Note: VITS">https://tungyuyoung.github.io/2024/08/30/VITS/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Text-to-Speech/" rel="tag"># Text to Speech</a>
+              <a href="/tags/Paper-Note/" rel="tag"># Paper Note</a>
+          </div>
+
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/08/27/Beamforming/" rel="prev" title="Beamforming in Speech Processing">
+                  <i class="fa fa-angle-left"></i> Beamforming in Speech Processing
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/09/05/CVAE/" rel="next" title="Variational Auto-Encoders">
+                  Variational Auto-Encoders <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+
+    <span class="author" itemprop="copyrightHolder">Tung-Yu Yeung</span>
+  </div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+<!--
+-->
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"tags":"none","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+
+</body>
+</html>
